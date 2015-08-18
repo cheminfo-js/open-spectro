@@ -1,10 +1,12 @@
 'use strict';
 var process=require('./process.js');
 
+
+
 function transmittance(experiment, reference) {
     var results=[];
     for (var i=0; i<experiment.length; i++) {
-        var result=experiment[i]/reference[i];
+        var result=-Math.log10(experiment[i]/reference[i])*100;
         results.push(result);
     }
     return results;
@@ -13,7 +15,7 @@ function transmittance(experiment, reference) {
 function absorbance(experiment, reference) {
     var results=[];
     for (var i=0; i<experiment.length; i++) {
-        var result=-Math.log10(experiment[i]/reference[i]);
+        var result=experiment[i]/reference[i]*100;
         results.push(result);
     }
     return results;
@@ -96,6 +98,14 @@ function convertToObject(spectra) {
     return result;
 }
 
+function addInfo(spectra, options) {
+    var options=options || {};
+    for (var key in spectra) {
+        var spectrum = spectra[key];
+        spectrum.name = options.name;
+    }
+}
+
 function addAbsorbanceTransmittance(spectra) {
     // if we have Z and E we calculate absorbance and transmittance
     if (spectra.Z && spectra.E) {
@@ -148,6 +158,7 @@ module.exports = function (text, options) {
 
     var spectra=convertToObject(results);
     addAbsorbanceTransmittance(spectra);
+    addInfo(spectra, options);
     process(spectra, options);
     addX(spectra,options);
 

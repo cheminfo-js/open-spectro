@@ -7,7 +7,8 @@ var options= {
     nMred: 630,
     nMgreen: 535,
     nMblue: 475,
-    smooth: 8
+    smooth: 8,
+    name: "My first spectrum"
 }
 
 
