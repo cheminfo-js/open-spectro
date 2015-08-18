@@ -2,11 +2,13 @@
 
 
 var wavelengthToColor = require('./wavelengthToColor');
-var parseSpectra = require('./parseSpectra');
+var parse = require('./parse');
 var process = require('./process');
 var annotations = require('./annotations');
+var util = require('./util');
 
 module.exports.wavelengthTocolor=wavelengthToColor;
-module.exports.parseSpectra=parseSpectra;
+module.exports.parse=parse;
 module.exports.process=process;
 module.exports.annotations=annotations;
+module.exports.util=util;

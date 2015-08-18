@@ -4,7 +4,7 @@
 
 function smooth(spectrum, nbPixels) {
     var result=[];
-    var array=spectrum.data;
+    var array=spectrum.y;
     var shift=Math.floor(nbPixels/2);
 
     for (var i=shift; i<(array.length-shift-1); i++) {
@@ -15,8 +15,7 @@ function smooth(spectrum, nbPixels) {
         result.push(average/nbPixels)
     }
 
-    spectrum.data=result;
-    spectrum.smooth=nbPixels;
+    spectrum.y=result;
     // need to shift the reference point
     spectrum.redPoint-=shift;
     spectrum.bluePoint-=shift;
@@ -24,7 +23,7 @@ function smooth(spectrum, nbPixels) {
 };
 
 function normalize(spectrum) {
-    var array=spectrum.data;
+    var array=spectrum.y;
     var min=Number.MAX_VALUE;
     var max=Number.MIN_VALUE;
     for (var i=0; i<array.length; i++) {
@@ -40,21 +39,18 @@ function normalize(spectrum) {
             array[i]=0.5;
         }
     }
-    spectrum.data=array;
+    spectrum.y=array;
 }
 
-module.exports.process=function(spectra, options) {
+module.exports=function(spectra, options) {
     var options=options||{};
-    if (! Array.isArray(spectra)) {
-        var spectra=[spectra];
-    }
 
-    for (var i=9; i<spectra.length; i++) {
+    for (var key in spectra) {
         if (options.smooth) {
-            smooth(spectra[i], options.smooth);
+            smooth(spectra[key], options.smooth);
         }
         if (options.normalize) {
-            normalize(spectra[i].data);
+            normalize(spectra[key].data);
         }
     }
 }

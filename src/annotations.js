@@ -1,5 +1,7 @@
 'use strict';
 
+var wavelengthToColor = require('./wavelengthToColor');
+
 
 function getAnnotation(pixel, color, height) {
     return {
@@ -16,27 +18,16 @@ function getAnnotation(pixel, color, height) {
     };
 }
 
-module.exports.annotations=function(spectrum) {
+module.exports=function(spectrum, options) {
     var annotations=[];
-    annotations.push(getAnnotation(referenceWaves.red,"red",15));
-    annotations.push(getAnnotation(referenceWaves.blue,"blue",15));
-    annotations.push(getAnnotation(referenceWaves.green,"green",15));
+    annotations.push(getAnnotation(options.nMred,"red",15));
+    annotations.push(getAnnotation(options.nMblue,"blue",15));
+    annotations.push(getAnnotation(options.nMgreen,"green",15));
 
-    var diffPoints=spectrum.redPoint-spectrum.bluePoint;
-    var diffNM=(referenceWaves.red-referenceWaves.blue)/(diffPoints-1);
-    var length=spectrum.data.length;
-
-    // we will add all the color spectrum
-    // need to guess the nm of the first point and last point
-    var firstNM=referenceWaves.blue-spectrum.bluePoint*diffNM;
-    var lastNM=referenceWaves.red+(length-spectrum.redPoint)*diffNM;
-    x=[];
-    for (var i=0; i<length; i++) {
-        var wavelength=firstNM+(lastNM-firstNM)/(length-1)*i;
-        x.push(wavelength);
-        var color=wavelengthToColor(wavelength)[0];
-        annotations.push(getAnnotation(wavelength,color,10));
+    var x=spectrum.x;
+    for (var i=0; i<x.length; i++) {
+        var color=wavelengthToColor(x[i]).color;
+        annotations.push(getAnnotation(x[i],color,10));
     }
     return annotations;
-
 }

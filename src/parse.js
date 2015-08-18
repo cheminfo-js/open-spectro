@@ -1,9 +1,30 @@
 'use strict';
+var process=require('./process.js');
+
+function transmittance(experiment, reference) {
+    var results=[];
+    for (var i=0; i<experiment.length; i++) {
+        var result=experiment[i]/reference[i];
+        results.push(result);
+    }
+    return results;
+}
+
+function absorbance(experiment, reference) {
+    var results=[];
+    for (var i=0; i<experiment.length; i++) {
+        var result=-Math.log10(experiment[i]/reference[i]);
+        results.push(result);
+    }
+    return results;
+}
+
+
 
 var difference=['r','q','p','o','n','m','l','k','j','%','J','K','L','M','N','O','P','Q','R'];
 
 function parseData(lines) {
-    var data=[];
+    var y=[];
     var currentValue=0;
     for (var i=0; i<lines.length; i++) {
         var line=lines[i];
@@ -19,11 +40,11 @@ function parseData(lines) {
                 } else {
                     currentValue=fields[j]>>0;
                 }
-                data.push(currentValue);
+                y.push(currentValue);
             }
         }
     }
-    return data;
+    return y;
 }
 
 
@@ -59,7 +80,56 @@ function parseInfo(info) {
     return result;
 }
 
-module.exports = function (text) {
+/*
+ types are normally: R G B W
+ Z (background), E (experimental)
+ A: absorbance
+ T: transmittance
+  */
+
+function convertToObject(spectra) {
+    var result={};
+    for (var i=0; i<spectra.length; i++) {
+        var spectrum=spectra[i];
+        result[spectrum.type]=spectrum;
+    }
+    return result;
+}
+
+function addAbsorbanceTransmittance(spectra) {
+    // if we have Z and E we calculate absorbance and transmittance
+    if (spectra.Z && spectra.E) {
+        var a=JSON.parse(JSON.stringify(spectra.Z));
+        a.type="A";
+        a.y=absorbance(spectra.E.y, spectra.Z.y);
+        spectra.A=a;
+        var t=JSON.parse(JSON.stringify(spectra.Z));
+        t.type="T";
+        t.y=transmittance(spectra.E.y, spectra.Z.y);
+        spectra.T=t;
+    }
+}
+
+function addX(spectra, options) {
+    for (var key in spectra) {
+        var spectrum=spectra[key];
+        var diffPoints=spectrum.redPoint-spectrum.bluePoint;
+        var diffNM=(options.nMred-options.nMblue)/(diffPoints-1);
+        var length=spectrum.y.length;
+
+        // we will add all the color spectrum
+        // need to guess the nm of the first point and last point
+        var firstNM=options.nMblue-spectrum.bluePoint*diffNM;
+        var lastNM=options.nMred+(length-spectrum.redPoint)*diffNM;
+        spectrum.x=[];
+        for (var i=0; i<length; i++) {
+            var wavelength=firstNM+(lastNM-firstNM)/(length-1)*i;
+            spectrum.x.push(wavelength);
+        }
+    }
+}
+
+module.exports = function (text, options) {
     var blocs=text.split(/[\r\n]*>/m);
     var results=[];
     for (var part=0; part<blocs.length; part++) {
@@ -70,10 +140,16 @@ module.exports = function (text) {
         var info=lines[0];
         if (info && info.match(/^[A-Z]/)) {
             var result=parseInfo(info);
-            result.data=parseData(lines.slice(1));
+            result.y=parseData(lines.slice(1));
             results.push(result);
         }
 
     }
-    return results;
+
+    var spectra=convertToObject(results);
+    addAbsorbanceTransmittance(spectra);
+    process(spectra, options);
+    addX(spectra,options);
+
+    return spectra;
 }
