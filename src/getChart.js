@@ -8,7 +8,7 @@ var types=require('./types.js');
 
 module.exports=function (experiments, channels, index) {
     var channels = channels || 'RGBWZE'
-    var index = index || 0;
+
     if (! Array.isArray(experiments)) experiments=[experiments];
 
     var chart = {
@@ -27,15 +27,25 @@ module.exports=function (experiments, channels, index) {
         }
     }
     for (var i = 0; i < experiments.length; i++) {
-        chart.value.data.push({
-            "x":data[i][0],
-            "y":data[i][1],
-            "label":"Label "+String(i),
-            xAxis: 0,
-            yAxis: 1
-        });
+        if ((index === undefined) || (index === i)) {
+            var experiment=experiments[i];
+            for (var key in experiment) {
+                if (channels.indexOf(key)>-1) {
+                    var data=experiment[key];
+                    chart.value.data.push({
+                        "x":data.x,
+                        "y":data.y,
+                        "label":types[key].label+": "+data.name,
+                        xAxis: 0,
+                        yAxis: 1,
+                        lineWidth: 2,
+                        color: 'red'
+                    });
+                }
+            }
+        }
     }
 
-    return array;
+    return chart;
 }
 
