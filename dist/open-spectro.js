@@ -209,6 +209,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	                result.greenPoint=values[1]>>0;
 	                result.bluePoint=values[2]>>0;
 	                break;
+	            case 'REF':
+	                var values=fieldValue.split("/");
+	                result.nMRed=values[0]>>0;
+	                result.nMGreen=values[1]>>0;
+	                result.nMBlue=values[2]>>0;
+	                break;
 	            case 'BG':
 	                var values=fieldValue.split("/");
 	                result.backgroundMin=values[0]>>0;
@@ -259,17 +265,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	}
 
-	function addX(spectra, options) {
+	function addX(spectra) {
 	    for (var key in spectra) {
 	        var spectrum=spectra[key];
 	        var diffPoints=spectrum.redPoint-spectrum.bluePoint;
-	        var diffNM=(options.nMred-options.nMblue)/(diffPoints-1);
+	        var diffNM=(spectrum.nMRed-spectrum.nMBlue)/(diffPoints-1);
 	        var length=spectrum.y.length;
 
 	        // we will add all the color spectrum
 	        // need to guess the nm of the first point and last point
-	        var firstNM=options.nMblue-spectrum.bluePoint*diffNM;
-	        var lastNM=options.nMred+(length-spectrum.redPoint)*diffNM;
+	        var firstNM=spectrum.nMBlue-spectrum.bluePoint*diffNM;
+	        var lastNM=spectrum.nMRed+(length-spectrum.redPoint)*diffNM;
 	        spectrum.x=[];
 	        for (var i=0; i<length; i++) {
 	            var wavelength=firstNM+(lastNM-firstNM)/(length-1)*i;
@@ -299,7 +305,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    addAbsorbanceTransmittance(spectra);
 	    addInfo(spectra, options);
 	    process(spectra, options);
-	    addX(spectra,options);
+	    addX(spectra);
 
 	    return spectra;
 	}
@@ -360,7 +366,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            smooth(spectra[key], options.smooth);
 	        }
 	        if (options.normalize) {
-	            normalize(spectra[key].data);
+	            normalize(spectra[key]);
 	        }
 	    }
 	}
@@ -389,11 +395,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	}
 
-	module.exports=function(spectrum, options) {
+	module.exports=function(spectrum) {
 	    var annotations=[];
-	    annotations.push(getAnnotation(options.nMred,"red",15));
-	    annotations.push(getAnnotation(options.nMblue,"blue",15));
-	    annotations.push(getAnnotation(options.nMgreen,"green",15));
+	    annotations.push(getAnnotation(spectrum.nMRed,"red",15));
+	    annotations.push(getAnnotation(spectrum.nMBlue,"blue",15));
+	    annotations.push(getAnnotation(spectrum.nMGreen,"green",15));
 
 	    var x=spectrum.x;
 	    for (var i=0; i<x.length; i++) {
