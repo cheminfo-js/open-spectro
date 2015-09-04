@@ -153,6 +153,7 @@ function addX(spectra) {
 }
 
 module.exports = function (text, options) {
+    if (! text) return [];
     var options=Object.create(options || {});
     options.name=options.name||'';
     var blocs=text.split(/[\r\n]*>/m);
