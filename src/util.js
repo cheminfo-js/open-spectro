@@ -12,7 +12,7 @@ module.exports.toXY=function(spectrum) {
 
 module.exports.toArray=function(spectra) {
     var array=[];
-    for (var key of Object.keys(spectra)) {
+    for (var key in spectra) {
         array.push(spectra[key]);
     }
     return array;
