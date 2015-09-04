@@ -35,7 +35,7 @@ module.exports=function (experiments, channels, index) {
                     chart.value.data.push({
                         "x":data.x,
                         "y":data.y,
-                        "label":types[key].label+": "+data.name,
+                        "label":types[key].label+(data.name ? ': '+data.name : ''),
                         xAxis: 0,
                         yAxis: 1,
                         lineWidth: 2,

@@ -43,7 +43,7 @@ function normalize(spectrum) {
 }
 
 module.exports=function(spectra, options) {
-    var options=options||{};
+    var options=Object.create(options||{});
 
     for (var key in spectra) {
         if (options.smooth) {
