@@ -1,6 +1,6 @@
 'use strict';
 var process=require('./process.js');
-
+var Util=require('./util.js');
 
 
 function transmittance(experiment, reference) {
@@ -126,6 +126,13 @@ function addAbsorbanceTransmittance(spectra) {
     }
 }
 
+function addTabdelimited(spectra) {
+    for (var key in spectra) {
+        var spectrum = spectra[key];
+        spectrum.tab = Util.toXY(spectrum);
+    }
+}
+
 function addX(spectra) {
     for (var key in spectra) {
         var spectrum=spectra[key];
@@ -169,6 +176,7 @@ module.exports = function (text, options) {
     addInfo(spectra, options);
     process(spectra, options);
     addX(spectra);
+    addTabdelimited(spectra);
 
     return spectra;
 }

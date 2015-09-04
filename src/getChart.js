@@ -7,7 +7,7 @@ var types=require('./types.js');
 
 
 module.exports=function (experiments, channels, index) {
-    var channels = channels || 'RGBWZE'
+    var channels = channels || 'RGBWT'
 
     if (! Array.isArray(experiments)) experiments=[experiments];
 
