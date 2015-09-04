@@ -19,6 +19,7 @@ function getAnnotation(pixel, color, height) {
 }
 
 module.exports=function(spectrum) {
+    if (! spectrum) return;
     var annotations=[];
     annotations.push(getAnnotation(spectrum.nMRed,"red",15));
     annotations.push(getAnnotation(spectrum.nMBlue,"blue",15));
