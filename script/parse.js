@@ -11,8 +11,6 @@ var options= {
 
 
 
-
-
 FS.readFile('./data/rgba.txt', 'utf8', function (err,data) {
     if (err) {
         return console.log(err);

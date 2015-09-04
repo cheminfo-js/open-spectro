@@ -4,19 +4,17 @@ var Util=require('./util.js');
 
 
 function absorbance(experiment, reference) {
-    var results=[];
+    var results=new Array(experiment.length);
     for (var i=0; i<experiment.length; i++) {
-        var result=-Math.log10(experiment[i]/reference[i]);
-        results.push(result);
+        results[i]=-Math.log10(experiment[i]/reference[i]);
     }
     return results;
 }
 
 function transmittance(experiment, reference) {
-    var results=[];
+    var results=new Array(experiment.length);
     for (var i=0; i<experiment.length; i++) {
-        var result=experiment[i]/reference[i]*100;
-        results.push(result);
+        results[i]=experiment[i]/reference[i]*100;
     }
     return results;
 }

@@ -9,7 +9,7 @@ function smooth(spectrum, nbPixels) {
 
     for (var i=shift; i<(array.length-shift-1); i++) {
         var average=0;
-        for (var j=i-shift; j<=i+shift; j++) {
+        for (var j=i-shift; j<i-shift+nbPixels; j++) {
             average+=array[j];
         }
         result.push(average/nbPixels)
