@@ -70,6 +70,12 @@ function parseInfo(info) {
                 result.greenPoint=values[1]>>0;
                 result.bluePoint=values[2]>>0;
                 break;
+            case 'REF':
+                var values=fieldValue.split("/");
+                result.nMRed=values[0]>>0;
+                result.nMGreen=values[1]>>0;
+                result.nMBlue=values[2]>>0;
+                break;
             case 'BG':
                 var values=fieldValue.split("/");
                 result.backgroundMin=values[0]>>0;
@@ -123,14 +129,15 @@ function addAbsorbanceTransmittance(spectra) {
 function addX(spectra, options) {
     for (var key in spectra) {
         var spectrum=spectra[key];
+        console.log(spectrum);
         var diffPoints=spectrum.redPoint-spectrum.bluePoint;
-        var diffNM=(options.nMred-options.nMblue)/(diffPoints-1);
+        var diffNM=(spectrum.nMRed-spectrum.nMBlue)/(diffPoints-1);
         var length=spectrum.y.length;
 
         // we will add all the color spectrum
         // need to guess the nm of the first point and last point
-        var firstNM=options.nMblue-spectrum.bluePoint*diffNM;
-        var lastNM=options.nMred+(length-spectrum.redPoint)*diffNM;
+        var firstNM=spectrum.nMBlue-spectrum.bluePoint*diffNM;
+        var lastNM=spectrum.nMRed+(length-spectrum.redPoint)*diffNM;
         spectrum.x=[];
         for (var i=0; i<length; i++) {
             var wavelength=firstNM+(lastNM-firstNM)/(length-1)*i;
