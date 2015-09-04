@@ -3,16 +3,16 @@ var process=require('./process.js');
 var Util=require('./util.js');
 
 
-function transmittance(experiment, reference) {
+function absorbance(experiment, reference) {
     var results=[];
     for (var i=0; i<experiment.length; i++) {
-        var result=-Math.log10(experiment[i]/reference[i])*100;
+        var result=-Math.log10(experiment[i]/reference[i]);
         results.push(result);
     }
     return results;
 }
 
-function absorbance(experiment, reference) {
+function transmittance(experiment, reference) {
     var results=[];
     for (var i=0; i<experiment.length; i++) {
         var result=experiment[i]/reference[i]*100;
