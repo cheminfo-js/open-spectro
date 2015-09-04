@@ -50,7 +50,7 @@ module.exports=function(spectra, options) {
             smooth(spectra[key], options.smooth);
         }
         if (options.normalize) {
-            normalize(spectra[key].data);
+            normalize(spectra[key]);
         }
     }
 }

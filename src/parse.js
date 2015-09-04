@@ -126,10 +126,9 @@ function addAbsorbanceTransmittance(spectra) {
     }
 }
 
-function addX(spectra, options) {
+function addX(spectra) {
     for (var key in spectra) {
         var spectrum=spectra[key];
-        console.log(spectrum);
         var diffPoints=spectrum.redPoint-spectrum.bluePoint;
         var diffNM=(spectrum.nMRed-spectrum.nMBlue)/(diffPoints-1);
         var length=spectrum.y.length;
@@ -167,7 +166,7 @@ module.exports = function (text, options) {
     addAbsorbanceTransmittance(spectra);
     addInfo(spectra, options);
     process(spectra, options);
-    addX(spectra,options);
+    addX(spectra);
 
     return spectra;
 }

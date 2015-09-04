@@ -5,6 +5,7 @@ var OSP = require('..');
 
 var options= {
     smooth: 8,
+    normalize: true,
     name: "My first spectrum"
 }
 
@@ -17,7 +18,7 @@ FS.readFile('./data/rgba.txt', 'utf8', function (err,data) {
         return console.log(err);
     }
     var spectra=OSP.parse(data, options);
-    var annotations=OSP.annotations(spectra.R, options);
+    var annotations=OSP.annotations(spectra.R);
     var chart=OSP.getChart(spectra);
 
     console.log(JSON.stringify(chart));
