@@ -18,10 +18,13 @@ FS.readFile('./data/rgba.txt', 'utf8', function (err,data) {
         return console.log(err);
     }
     var spectra=OSP.parse(data, options);
-    var annotations=OSP.annotations(spectra.R);
+    var annotations=OSP.getAnnotations(spectra.R);
     var chart=OSP.getChart(spectra);
 
-    console.log(JSON.stringify(chart));
+    var spectraArray=OSP.Util.toArray(spectra);
+
+
+    console.log(spectraArray);
 
     FS.writeFile('./temp/annotations.json', JSON.stringify(annotations), function (err,data) {});
     FS.writeFile('./temp/chart.json', JSON.stringify(chart), function (err,data) {});
