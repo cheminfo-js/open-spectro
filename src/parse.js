@@ -1,22 +1,20 @@
 'use strict';
 var process=require('./process.js');
+var Util=require('./util.js');
 
 
-
-function transmittance(experiment, reference) {
-    var results=[];
+function absorbance(experiment, reference) {
+    var results=new Array(experiment.length);
     for (var i=0; i<experiment.length; i++) {
-        var result=-Math.log10(experiment[i]/reference[i])*100;
-        results.push(result);
+        results[i]=-Math.log10(experiment[i]/reference[i]);
     }
     return results;
 }
 
-function absorbance(experiment, reference) {
-    var results=[];
+function transmittance(experiment, reference) {
+    var results=new Array(experiment.length);
     for (var i=0; i<experiment.length; i++) {
-        var result=experiment[i]/reference[i]*100;
-        results.push(result);
+        results[i]=experiment[i]/reference[i]*100;
     }
     return results;
 }
@@ -70,6 +68,12 @@ function parseInfo(info) {
                 result.greenPoint=values[1]>>0;
                 result.bluePoint=values[2]>>0;
                 break;
+            case 'REF':
+                var values=fieldValue.split("/");
+                result.nMRed=values[0]>>0;
+                result.nMGreen=values[1]>>0;
+                result.nMBlue=values[2]>>0;
+                break;
             case 'BG':
                 var values=fieldValue.split("/");
                 result.backgroundMin=values[0]>>0;
@@ -120,17 +124,24 @@ function addAbsorbanceTransmittance(spectra) {
     }
 }
 
-function addX(spectra, options) {
+function addTabdelimited(spectra) {
+    for (var key in spectra) {
+        var spectrum = spectra[key];
+        spectrum.tab = Util.toXY(spectrum);
+    }
+}
+
+function addX(spectra) {
     for (var key in spectra) {
         var spectrum=spectra[key];
         var diffPoints=spectrum.redPoint-spectrum.bluePoint;
-        var diffNM=(options.nMred-options.nMblue)/(diffPoints-1);
+        var diffNM=(spectrum.nMRed-spectrum.nMBlue)/(diffPoints-1);
         var length=spectrum.y.length;
 
         // we will add all the color spectrum
         // need to guess the nm of the first point and last point
-        var firstNM=options.nMblue-spectrum.bluePoint*diffNM;
-        var lastNM=options.nMred+(length-spectrum.redPoint)*diffNM;
+        var firstNM=spectrum.nMBlue-spectrum.bluePoint*diffNM;
+        var lastNM=spectrum.nMRed+(length-spectrum.redPoint)*diffNM;
         spectrum.x=[];
         for (var i=0; i<length; i++) {
             var wavelength=firstNM+(lastNM-firstNM)/(length-1)*i;
@@ -140,6 +151,9 @@ function addX(spectra, options) {
 }
 
 module.exports = function (text, options) {
+    if (! text) return [];
+    var options=Object.create(options || {});
+    options.name=options.name||'';
     var blocs=text.split(/[\r\n]*>/m);
     var results=[];
     for (var part=0; part<blocs.length; part++) {
@@ -160,7 +174,8 @@ module.exports = function (text, options) {
     addAbsorbanceTransmittance(spectra);
     addInfo(spectra, options);
     process(spectra, options);
-    addX(spectra,options);
+    addX(spectra);
+    addTabdelimited(spectra);
 
     return spectra;
 }

@@ -9,7 +9,7 @@ function smooth(spectrum, nbPixels) {
 
     for (var i=shift; i<(array.length-shift-1); i++) {
         var average=0;
-        for (var j=i-shift; j<=i+shift; j++) {
+        for (var j=i-shift; j<i-shift+nbPixels; j++) {
             average+=array[j];
         }
         result.push(average/nbPixels)
@@ -43,14 +43,14 @@ function normalize(spectrum) {
 }
 
 module.exports=function(spectra, options) {
-    var options=options||{};
+    var options=Object.create(options||{});
 
     for (var key in spectra) {
         if (options.smooth) {
             smooth(spectra[key], options.smooth);
         }
         if (options.normalize) {
-            normalize(spectra[key].data);
+            normalize(spectra[key]);
         }
     }
 }

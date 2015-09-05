@@ -9,3 +9,11 @@ module.exports.toXY=function(spectrum) {
     }
     return result.join('\r\n');
 }
+
+module.exports.toArray=function(spectra) {
+    var array=[];
+    for (var key in spectra) {
+        array.push(spectra[key]);
+    }
+    return array;
+}

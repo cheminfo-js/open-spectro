@@ -18,11 +18,12 @@ function getAnnotation(pixel, color, height) {
     };
 }
 
-module.exports=function(spectrum, options) {
+module.exports=function(spectrum) {
+    if (! spectrum) return;
     var annotations=[];
-    annotations.push(getAnnotation(options.nMred,"red",15));
-    annotations.push(getAnnotation(options.nMblue,"blue",15));
-    annotations.push(getAnnotation(options.nMgreen,"green",15));
+    annotations.push(getAnnotation(spectrum.nMRed,"red",15));
+    annotations.push(getAnnotation(spectrum.nMBlue,"blue",15));
+    annotations.push(getAnnotation(spectrum.nMGreen,"green",15));
 
     var x=spectrum.x;
     for (var i=0; i<x.length; i++) {

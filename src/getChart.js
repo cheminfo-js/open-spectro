@@ -7,7 +7,7 @@ var types=require('./types.js');
 
 
 module.exports=function (experiments, channels, index) {
-    var channels = channels || 'RGBWZE'
+    var channels = channels || 'RGBWT'
 
     if (! Array.isArray(experiments)) experiments=[experiments];
 
@@ -36,7 +36,7 @@ module.exports=function (experiments, channels, index) {
                     chart.value.data.push({
                         "x":data.x,
                         "y":data.y,
-                        "label":(++counter)+". "+types[key].label+": "+data.name,
+                        "label":(++counter)+". "+types[key].label+(data.name ? ': '+data.name : ''),
                         xAxis: 0,
                         yAxis: 1,
                         lineWidth: 2,
