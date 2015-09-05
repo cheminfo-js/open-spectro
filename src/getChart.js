@@ -26,6 +26,7 @@ module.exports=function (experiments, channels, index) {
             "data": []
         }
     }
+    var counter=0;
     for (var i = 0; i < experiments.length; i++) {
         if ((index === undefined) || (index === i)) {
             var experiment=experiments[i];
@@ -35,7 +36,7 @@ module.exports=function (experiments, channels, index) {
                     chart.value.data.push({
                         "x":data.x,
                         "y":data.y,
-                        "label":types[key].label+": "+data.name,
+                        "label":(++counter)+". "+types[key].label+": "+data.name,
                         xAxis: 0,
                         yAxis: 1,
                         lineWidth: 2,
