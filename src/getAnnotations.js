@@ -5,16 +5,15 @@ var wavelengthToColor = require('./wavelengthToColor');
 
 function getAnnotation(pixel, color, height) {
     return {
-        "pos2": {
-            "y": height+"px",
-            "x": pixel-1
-        },
         "fillColor": color,
         "type": "rect",
-        "pos": {
+        "position": [{
             "y": "0px",
             "x": pixel+2
-        }
+        },{
+            "y": height+"px",
+            "x": pixel-1
+        }]
     };
 }
 
