@@ -7,6 +7,7 @@ var process = require('./process');
 var getAnnotations = require('./getAnnotations');
 var Util = require('./util');
 var getChart = require('./getChart');
+var getTabDelimited = require('./getTabDelimited');
 
 module.exports.wavelengthTocolor=wavelengthToColor;
 module.exports.parse=parse;
@@ -14,3 +15,4 @@ module.exports.process=process;
 module.exports.getAnnotations=getAnnotations;
 module.exports.Util=Util;
 module.exports.getChart=getChart;
+module.exports.getTabDelimited=getTabDelimited;
