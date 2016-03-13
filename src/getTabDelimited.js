@@ -36,10 +36,12 @@ module.exports=function (experiments, channels, index) {
     }
 
     var lines=[];
-    for (var header of headers) {
+    for (var i=0; i<headers.length; i++) {
+        var header=headers[i];
         lines.push(header.join("\t"));
     }
-    for (var datum of data) {
+    for (var i=0; i<data.length; i++) {
+        var datum=data[i];
         lines.push(datum.join("\t"));
     }
     var result=lines.join("\r");

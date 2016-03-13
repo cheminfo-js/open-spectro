@@ -60,16 +60,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	var wavelengthToColor = __webpack_require__(1);
 	var parse = __webpack_require__(2);
 	var process = __webpack_require__(3);
-	var annotations = __webpack_require__(4);
-	var util = __webpack_require__(5);
+	var getAnnotations = __webpack_require__(5);
+	var Util = __webpack_require__(4);
 	var getChart = __webpack_require__(6);
+	var getTabDelimited = __webpack_require__(8);
 
 	module.exports.wavelengthTocolor=wavelengthToColor;
 	module.exports.parse=parse;
 	module.exports.process=process;
-	module.exports.annotations=annotations;
-	module.exports.util=util;
+	module.exports.getAnnotations=getAnnotations;
+	module.exports.Util=Util;
 	module.exports.getChart=getChart;
+	module.exports.getTabDelimited=getTabDelimited;
 
 /***/ },
 /* 1 */
@@ -139,23 +141,21 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	var process=__webpack_require__(3);
+	var Util=__webpack_require__(4);
 
 
-
-	function transmittance(experiment, reference) {
-	    var results=[];
+	function absorbance(experiment, reference) {
+	    var results=new Array(experiment.length);
 	    for (var i=0; i<experiment.length; i++) {
-	        var result=-Math.log10(experiment[i]/reference[i])*100;
-	        results.push(result);
+	        results[i]=-Math.log10(experiment[i]/reference[i]);
 	    }
 	    return results;
 	}
 
-	function absorbance(experiment, reference) {
-	    var results=[];
+	function transmittance(experiment, reference) {
+	    var results=new Array(experiment.length);
 	    for (var i=0; i<experiment.length; i++) {
-	        var result=experiment[i]/reference[i]*100;
-	        results.push(result);
+	        results[i]=experiment[i]/reference[i]*100;
 	    }
 	    return results;
 	}
@@ -265,6 +265,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	}
 
+	function addTabdelimited(spectra) {
+	    for (var key in spectra) {
+	        var spectrum = spectra[key];
+	        spectrum.tab = Util.toXY(spectrum);
+	    }
+	}
+
 	function addX(spectra) {
 	    for (var key in spectra) {
 	        var spectrum=spectra[key];
@@ -285,6 +292,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	module.exports = function (text, options) {
+	    if (! text) return [];
+	    var options=Object.create(options || {});
+	    options.name=options.name||'';
 	    var blocs=text.split(/[\r\n]*>/m);
 	    var results=[];
 	    for (var part=0; part<blocs.length; part++) {
@@ -306,6 +316,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    addInfo(spectra, options);
 	    process(spectra, options);
 	    addX(spectra);
+	    addTabdelimited(spectra);
 
 	    return spectra;
 	}
@@ -325,7 +336,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    for (var i=shift; i<(array.length-shift-1); i++) {
 	        var average=0;
-	        for (var j=i-shift; j<=i+shift; j++) {
+	        for (var j=i-shift; j<i-shift+nbPixels; j++) {
 	            average+=array[j];
 	        }
 	        result.push(average/nbPixels)
@@ -359,7 +370,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	module.exports=function(spectra, options) {
-	    var options=options||{};
+	    var options=Object.create(options||{});
 
 	    for (var key in spectra) {
 	        if (options.smooth) {
@@ -373,44 +384,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var wavelengthToColor = __webpack_require__(1);
-
-
-	function getAnnotation(pixel, color, height) {
-	    return {
-	        "pos2": {
-	            "y": height+"px",
-	            "x": pixel-1
-	        },
-	        "fillColor": color,
-	        "type": "rect",
-	        "pos": {
-	            "y": "0px",
-	            "x": pixel+2
-	        }
-	    };
-	}
-
-	module.exports=function(spectrum) {
-	    var annotations=[];
-	    annotations.push(getAnnotation(spectrum.nMRed,"red",15));
-	    annotations.push(getAnnotation(spectrum.nMBlue,"blue",15));
-	    annotations.push(getAnnotation(spectrum.nMGreen,"green",15));
-
-	    var x=spectrum.x;
-	    for (var i=0; i<x.length; i++) {
-	        var color=wavelengthToColor(x[i]).color;
-	        annotations.push(getAnnotation(x[i],color,10));
-	    }
-	    return annotations;
-	}
-
-/***/ },
-/* 5 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -425,6 +398,54 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return result.join('\r\n');
 	}
 
+	module.exports.toArray=function(spectra) {
+	    var array=[];
+	    for (var key in spectra) {
+	        array.push(spectra[key]);
+	    }
+	    return array;
+	}
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var wavelengthToColor = __webpack_require__(1);
+
+
+	function getAnnotation(pixel, color, height) {
+	    return {
+	        "fillColor": color,
+	        "type": "rect",
+	        "position": [{
+	            "y": "0px",
+	            "x": pixel+2
+	        },{
+	            "y": height+"px",
+	            "x": pixel-1
+	        }],
+	        "strokeWidth":0
+	    };
+	}
+
+	module.exports=function(spectrum) {
+	    if (! spectrum) return;
+	    var annotations=[];
+	    annotations.push(getAnnotation(spectrum.nMRed,"red",15));
+	    annotations.push(getAnnotation(spectrum.nMBlue,"blue",15));
+	    annotations.push(getAnnotation(spectrum.nMGreen,"green",15));
+
+	    var x=spectrum.x;
+	    for (var i=0; i<x.length; i++) {
+	        var color=wavelengthToColor(x[i]).color;
+	        annotations.push(getAnnotation(x[i],color,10));
+	    }
+	    return annotations;
+	}
+
+
 /***/ },
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
@@ -438,7 +459,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	module.exports=function (experiments, channels, index) {
-	    var channels = channels || 'RGBWZE'
+	    var channels = channels || 'RGBWT';
 
 	    if (! Array.isArray(experiments)) experiments=[experiments];
 
@@ -457,6 +478,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            "data": []
 	        }
 	    }
+	    var counter=0;
 	    for (var i = 0; i < experiments.length; i++) {
 	        if ((index === undefined) || (index === i)) {
 	            var experiment=experiments[i];
@@ -466,7 +488,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    chart.value.data.push({
 	                        "x":data.x,
 	                        "y":data.y,
-	                        "label":types[key].label+": "+data.name,
+	                        "label":(++counter)+". "+types[key].label+(data.name ? ': '+data.name : '')+
+	                        (data.concentration ? ' ('+data.name+")" : '')
+	                        ,
 	                        xAxis: 0,
 	                        yAxis: 1,
 	                        lineWidth: 2,
@@ -505,6 +529,79 @@ return /******/ (function(modules) { // webpackBootstrap
 	    A:{label:'absorbance', yUnit:"(%)"},
 	    T:{label:'transmittance', yUnit:"(%)"},
 	}
+
+
+/***/ },
+/* 8 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	// convert experiments to a tab-delimited file
+
+	module.exports=function (experiments, channels, index) {
+	    var channels = channels || 'RGBWT';
+
+	    if (! Array.isArray(experiments)) experiments=[experiments];
+
+	    var headers=initHeaders();
+	    var data=[];
+
+
+	    var counter=0;
+	    for (var i = 0; i < experiments.length; i++) {
+	        if ((index === undefined) || (index === i)) {
+	            var experiment=experiments[i];
+
+	            addHeaders(experiment, 'X');
+	            var currentData=experiment[Object.keys(experiment)[0]];
+	            for (var j=0; j<currentData.x.length; j++) {
+	                if (! data[j]) data[j]=[];
+	                data[j].push(currentData.x[j]);
+	            }
+
+	            for (var key in experiment) {
+	                if (channels.indexOf(key)>-1) {
+	                    addHeaders(experiment,key);
+	                    var currentData=experiment[key];
+	                    for (var j=0; j<currentData.y.length; j++) {
+	                        data[j].push(currentData.y[j]);
+	                    }
+	                }
+	            }
+	        }
+	    }
+
+	    var lines=[];
+	    for (var i=0; i<headers.length; i++) {
+	        var header=headers[i];
+	        lines.push(header.join("\t"));
+	    }
+	    for (var i=0; i<data.length; i++) {
+	        var datum=data[i];
+	        lines.push(datum.join("\t"));
+	    }
+	    var result=lines.join("\r");
+	    return result;
+	}
+
+	function addHeaders(experiment, type) {
+	    headers[0].push(experiment.info.name);
+	    headers[1].push(experiment.info.concentration);
+	    headers[2].push(experiment.info.comment);
+	    headers[3].push(type);
+	}
+
+	function initHeaders() {
+	    var headers=[];
+	    headers[0]=[]; // name
+	    headers[1]=[]; // concentration
+	    headers[2]=[]; // comment
+	    headers[3]=[]; // type
+	    return headers;
+	}
+
+
 
 
 /***/ }
