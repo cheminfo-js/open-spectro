@@ -539,14 +539,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	// convert experiments to a tab-delimited file
 
+
+
 	module.exports=function (experiments, channels, index) {
 	    var channels = channels || 'RGBWT';
 
 	    if (! Array.isArray(experiments)) experiments=[experiments];
 
-	    var headers=initHeaders();
 	    var data=[];
 
+	    var headers=[];
+	    headers[0]=[]; // name
+	    headers[1]=[]; // concentration
+	    headers[2]=[]; // comment
+	    headers[3]=[]; // type
 
 	    var counter=0;
 	    for (var i = 0; i < experiments.length; i++) {
@@ -583,24 +589,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    var result=lines.join("\r");
 	    return result;
-	}
 
-	function addHeaders(experiment, type) {
-	    headers[0].push(experiment.info.name);
-	    headers[1].push(experiment.info.concentration);
-	    headers[2].push(experiment.info.comment);
-	    headers[3].push(type);
-	}
+	    function addHeaders(headers, experiment, type) {
+	        headers[0].push(experiment.info.name);
+	        headers[1].push(experiment.info.concentration);
+	        headers[2].push(experiment.info.comment);
+	        headers[3].push(type);
+	    }
 
-	function initHeaders() {
-	    var headers=[];
-	    headers[0]=[]; // name
-	    headers[1]=[]; // concentration
-	    headers[2]=[]; // comment
-	    headers[3]=[]; // type
-	    return headers;
 	}
-
 
 
 

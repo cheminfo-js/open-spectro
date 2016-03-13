@@ -2,11 +2,7 @@
 
 // convert experiments to a tab-delimited file
 
-var headers=[];
-headers[0]=[]; // name
-headers[1]=[]; // concentration
-headers[2]=[]; // comment
-headers[3]=[]; // type
+
 
 module.exports=function (experiments, channels, index) {
     var channels = channels || 'RGBWT';
@@ -15,6 +11,11 @@ module.exports=function (experiments, channels, index) {
 
     var data=[];
 
+    var headers=[];
+    headers[0]=[]; // name
+    headers[1]=[]; // concentration
+    headers[2]=[]; // comment
+    headers[3]=[]; // type
 
     var counter=0;
     for (var i = 0; i < experiments.length; i++) {
@@ -51,11 +52,13 @@ module.exports=function (experiments, channels, index) {
     }
     var result=lines.join("\r");
     return result;
+
+    function addHeaders(headers, experiment, type) {
+        headers[0].push(experiment.info.name);
+        headers[1].push(experiment.info.concentration);
+        headers[2].push(experiment.info.comment);
+        headers[3].push(type);
+    }
+
 }
 
-function addHeaders(headers, experiment, type) {
-    headers[0].push(experiment.info.name);
-    headers[1].push(experiment.info.concentration);
-    headers[2].push(experiment.info.comment);
-    headers[3].push(type);
-}

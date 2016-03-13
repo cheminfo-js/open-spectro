@@ -14,7 +14,6 @@ describe('test Identical', function () {
     }
 
 
-
     FS.readFile('../data/expNearlyIdentical.txt', 'utf8', function (err,data) {
         if (err) {
             return console.log(err);
@@ -25,18 +24,10 @@ describe('test Identical', function () {
 
         var spectraArray=OSP.Util.toArray(spectra);
 
-
         console.log(spectra.T);
-
 
         it('should be tested', function () {
             throw new Error('no test!');
         });
-
     });
-
-
-
-
-
 });
