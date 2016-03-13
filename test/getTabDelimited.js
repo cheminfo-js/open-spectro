@@ -11,16 +11,11 @@ describe.only('test getTabDelimited', function () {
         smooth: 8,
         normalize: true,
         type:'T'
-    }
+    };
 
 
-    FS.readFile('../data/experiments.json', 'utf8', function (err,data) {
-        if (err) {
-            return console.log(err);
-        }
-
-        var experiments=JSON.parse(data);
-        var tabDelimited=OSP.getTabDelimited(experiments);
-        console.log(tabDelimited);
-    });
+    var data=FS.readFileSync('./data/experiments.json', 'utf8');
+    var experiments=JSON.parse(data);
+    var tabDelimited=OSP.getTabDelimited(experiments);
+    console.log(tabDelimited);
 });

@@ -14,20 +14,16 @@ describe('test Identical', function () {
     }
 
 
-    FS.readFile('../data/expNearlyIdentical.txt', 'utf8', function (err,data) {
-        if (err) {
-            return console.log(err);
-        }
-        var spectra=OSP.parse(data, options);
-        var annotations=OSP.getAnnotations(spectra.R);
-        var chart=OSP.getChart(spectra);
+    var data=FS.readFileSync('./data/expNearlyIdentical.txt', 'utf8');
+    var spectra=OSP.parse(data, options);
+    var annotations=OSP.getAnnotations(spectra.R);
+    var chart=OSP.getChart(spectra);
 
-        var spectraArray=OSP.Util.toArray(spectra);
+    var spectraArray=OSP.Util.toArray(spectra);
 
-        console.log(spectra.T);
+    console.log(spectra.T);
 
-        it('should be tested', function () {
-            throw new Error('no test!');
-        });
+    it('should be tested', function () {
+        throw new Error('no test!');
     });
 });
