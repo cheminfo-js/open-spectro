@@ -64,6 +64,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var Util = __webpack_require__(4);
 	var getChart = __webpack_require__(6);
 	var getTabDelimited = __webpack_require__(8);
+	var load = __webpack_require__(9);
 
 	module.exports.wavelengthTocolor=wavelengthToColor;
 	module.exports.parse=parse;
@@ -72,6 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports.Util=Util;
 	module.exports.getChart=getChart;
 	module.exports.getTabDelimited=getTabDelimited;
+	module.exports.load=load;
 
 /***/ },
 /* 1 */
@@ -243,10 +245,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return result;
 	}
 
-	function addInfo(spectra, options) {
+	function addInfo(spectra, info) {
 	    var options=options || {};
-	    for (var key in spectra) {
-	        var spectrum = spectra[key];
+	    console.log("------");
+	    for (var type in spectra) {
+	        var spectrum=spectra[type];
+	        for (var key in Object.keys(info)) {
+	            console.log(key);
+	            spectrum.info = spectrum.info || {};
+	            if (key!=='data') {
+	                spectrum.info[key]=info;
+	            }
+	        }
 	        spectrum.name = options.name;
 	    }
 	}
@@ -265,7 +275,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	}
 
-	function addTabdelimited(spectra) {
+	function addTabDelimited(spectra) {
 	    for (var key in spectra) {
 	        var spectrum = spectra[key];
 	        spectrum.tab = Util.toXY(spectrum);
@@ -310,13 +320,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	    }
-
 	    var spectra=convertToObject(results);
 	    addAbsorbanceTransmittance(spectra);
-	    addInfo(spectra, options);
+	    addInfo(spectra, options.info);
 	    process(spectra, options);
 	    addX(spectra);
-	    addTabdelimited(spectra);
+	    addTabDelimited(spectra);
 
 	    return spectra;
 	}
@@ -426,7 +435,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            "y": height+"px",
 	            "x": pixel-1
 	        }],
-	        "strokeWidth":0
+	        "strokeWidth":0.0001
 	    };
 	}
 
@@ -469,7 +478,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            title: "Open Spectrophotometer results",
 	            "axis": [
 	                {
-	                    "label": "nM"
+	                    "label": "nm"
 	                },
 	                {
 	                    "label": "Y axis"
@@ -494,7 +503,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        xAxis: 0,
 	                        yAxis: 1,
 	                        lineWidth: 2,
-	                        color: 'red'
+	                        color: types[key].color
 	                    });
 	                }
 	            }
@@ -503,7 +512,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    return chart;
 	}
-
 
 
 /***/ },
@@ -520,14 +528,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 
 	module.exports = {
-	    R:{label:'red', yUnit:"relative"},
-	    G:{label:'green', yUnit:"relative"},
-	    B:{label:'blue', yUnit:"relative"},
-	    W:{label:'white', yUnit:"relative"},
-	    Z:{label:'background', yUnit:"relative"},
-	    E:{label:'experimental', yUnit:"relative"},
-	    A:{label:'absorbance', yUnit:"(%)"},
-	    T:{label:'transmittance', yUnit:"(%)"},
+	    R:{label:'red', yUnit:"relative", color:'red'},
+	    G:{label:'green', yUnit:"relative", color:'green'},
+	    B:{label:'blue', yUnit:"relative", color:'blue'},
+	    W:{label:'white', yUnit:"relative", color:'black'},
+	    Z:{label:'background', yUnit:"relative", color:'grey'},
+	    E:{label:'experimental', yUnit:"relative", color:'black'},
+	    A:{label:'absorbance', yUnit:"(%), color:'black'"},
+	    T:{label:'transmittance', yUnit:"(%), color:'black'"},
 	}
 
 
@@ -600,6 +608,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	var parse=__webpack_require__(2);
+
+	// We load a json containing all the einformations
+
+
+	module.exports = function (selected, options) {
+	    var options=Object.create(options||{});
+	    var experiments=[];
+	    selected.forEach(function(current) {
+	        options.info=JSON.parse(JSON.stringify(current));
+	        var experiment=parse(current.data, options);
+	        experiments.push(experiment);
+	    });
+	    return experiments;
+	};
 
 /***/ }
 /******/ ])

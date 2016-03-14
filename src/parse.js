@@ -102,11 +102,16 @@ function convertToObject(spectra) {
     return result;
 }
 
-function addInfo(spectra, options) {
-    var options=options || {};
-    for (var key in spectra) {
-        var spectrum = spectra[key];
-        spectrum.name = options.name;
+function addInfo(spectra, info) {
+    var info=info || {};
+    for (var type in spectra) {
+        var spectrum=spectra[type];
+        Object.keys(info).forEach(function(key) {
+            spectrum.info = spectrum.info || {};
+            if (key!=='data') {
+                spectrum.info[key]=info[key];
+            }
+        });
     }
 }
 
@@ -124,7 +129,7 @@ function addAbsorbanceTransmittance(spectra) {
     }
 }
 
-function addTabdelimited(spectra) {
+function addTabDelimited(spectra) {
     for (var key in spectra) {
         var spectrum = spectra[key];
         spectrum.tab = Util.toXY(spectrum);
@@ -169,13 +174,12 @@ module.exports = function (text, options) {
         }
 
     }
-
     var spectra=convertToObject(results);
     addAbsorbanceTransmittance(spectra);
-    addInfo(spectra, options);
+    addInfo(spectra, options.info);
     process(spectra, options);
     addX(spectra);
-    addTabdelimited(spectra);
+    addTabDelimited(spectra);
 
     return spectra;
 }
