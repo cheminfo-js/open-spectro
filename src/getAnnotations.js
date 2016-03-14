@@ -14,7 +14,7 @@ function getAnnotation(pixel, color, height) {
             "y": height+"px",
             "x": pixel-1
         }],
-        "strokeWidth":0
+        "strokeWidth":0.0001
     };
 }
 
