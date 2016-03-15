@@ -76,8 +76,10 @@ module.exports=function (experiments, options) {
                         "label":label,
                         xAxis: 0,
                         yAxis: 1,
-                        lineWidth: 2,
-                        color: types[key].color
+                        defaultStyle: {
+                            lineColor: types[key].color,
+                            lineWidth: 2
+                        }
                     });
                 }
             }
