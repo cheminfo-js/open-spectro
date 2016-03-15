@@ -5,6 +5,7 @@ var wavelengthToColor = require('./wavelengthToColor');
 var parse = require('./parse');
 var process = require('./process');
 var getAnnotations = require('./getAnnotations');
+var getColorBar = require('./getColorBar');
 var Util = require('./util');
 var getChart = require('./getChart');
 var getTabDelimited = require('./getTabDelimited');
