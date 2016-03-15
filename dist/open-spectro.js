@@ -246,18 +246,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	function addInfo(spectra, info) {
-	    var options=options || {};
-	    console.log("------");
+	    var info=info || {};
 	    for (var type in spectra) {
 	        var spectrum=spectra[type];
-	        for (var key in Object.keys(info)) {
-	            console.log(key);
+	        Object.keys(info).forEach(function(key) {
 	            spectrum.info = spectrum.info || {};
 	            if (key!=='data') {
-	                spectrum.info[key]=info;
+	                spectrum.info[key]=info[key];
 	            }
-	        }
-	        spectrum.name = options.name;
+	        });
 	    }
 	}
 
@@ -304,7 +301,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = function (text, options) {
 	    if (! text) return [];
 	    var options=Object.create(options || {});
-	    options.name=options.name||'';
 	    var blocs=text.split(/[\r\n]*>/m);
 	    var results=[];
 	    for (var part=0; part<blocs.length; part++) {
@@ -467,50 +463,90 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 
-	module.exports=function (experiments, channels, index) {
-	    var channels = channels || 'RGBWT';
+	module.exports=function (experiments, options) {
+	    var options=options || {};
+	    var channels=options.channels || 'RGBWT';
+	    var index=options.index;
 
 	    if (! Array.isArray(experiments)) experiments=[experiments];
 
-	    var chart = {
-	        type: "chart",
-	        value: {
-	            title: "Open Spectrophotometer results",
-	            "axis": [
-	                {
-	                    "label": "nm"
-	                },
-	                {
-	                    "label": "Y axis"
-	                }
-	            ],
-	            "data": []
-	        }
+	    var yLabel="Y axis";
+	    if (channels.length===1) {
+	        yLabel=types[channels].label + "("+types[channels].yUnit+")";
 	    }
+
+	    var chart = {
+	        title: "Open Spectrophotometer results",
+	        "axis": [
+	            {
+	                "label": "Wavelength (nm)"
+	            },
+	            {
+	                "label": yLabel
+	            }
+	        ],
+	        "data": []
+	    }
+
 	    var counter=0;
+
+	    var showName=false;
+	    var showConcentration=false;
+	    var showComment=false;
+	    var showChannel=(channels.length===1) ? false : true;
+
+	    experiments.forEach(function(experiment) {
+	        experiment.info=experiment.info || {};
+	    });
+
+	    for (var i=1; i<experiments.length; i++) {
+	        if (experiments[0].info.concentration !== experiments[i].info.concentration ) showConcentration=true;
+	        if (experiments[0].info.name !== experiments[i].info.name ) showName=true;
+	        if (experiments[0].info.comment !== experiments[i].info.comment ) showComment=true;
+	    }
+
 	    for (var i = 0; i < experiments.length; i++) {
 	        if ((index === undefined) || (index === i)) {
 	            var experiment=experiments[i];
 	            for (var key in experiment) {
 	                if (channels.indexOf(key)>-1) {
 	                    var data=experiment[key];
-	                    chart.value.data.push({
+
+	                    var label="";
+	                    if (showName) label+=data.info.name;
+	                    if (showConcentration) {
+	                        if (showName) label+=' ('+data.info.concentration+')';
+	                        else label+=data.info.concentration;
+	                    }
+	                    if (showComment) {
+	                        if (label) label+=' ';
+	                        label+=data.info.comment;
+	                    }
+	                    if (showChannel) {
+	                        if (label) label+=' ';
+	                        label+=key;
+	                    }
+
+	                    chart.data.push({
 	                        "x":data.x,
 	                        "y":data.y,
-	                        "label":(++counter)+". "+types[key].label+(data.name ? ': '+data.name : '')+
-	                        (data.concentration ? ' ('+data.name+")" : '')
-	                        ,
+	                        "label":label,
 	                        xAxis: 0,
 	                        yAxis: 1,
-	                        lineWidth: 2,
-	                        color: types[key].color
+	                        defaultStyle: {
+	                            lineColor: types[key].color,
+	                            lineWidth: 2
+	                        }
 	                    });
 	                }
 	            }
 	        }
 	    }
 
-	    return chart;
+	    return {
+	        type:'chart',
+	        value: chart
+	    };
 	}
 
 
@@ -534,9 +570,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    W:{label:'white', yUnit:"relative", color:'black'},
 	    Z:{label:'background', yUnit:"relative", color:'grey'},
 	    E:{label:'experimental', yUnit:"relative", color:'black'},
-	    A:{label:'absorbance', yUnit:"(%), color:'black'"},
-	    T:{label:'transmittance', yUnit:"(%), color:'black'"},
-	}
+	    A:{label:'absorbance', yUnit:"(%)", color:'black'},
+	    T:{label:'transmittance', yUnit:"(%)", color:'black'}
+	};
 
 
 /***/ },
@@ -547,7 +583,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	// convert experiments to a tab-delimited file
 
-
+	var headers=[];
+	headers[0]=[]; // name
+	headers[1]=[]; // concentration
+	headers[2]=[]; // comment
+	headers[3]=[]; // type
 
 	module.exports=function (experiments, channels, index) {
 	    var channels = channels || 'RGBWT';
@@ -556,11 +596,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var data=[];
 
-	    var headers=[];
-	    headers[0]=[]; // name
-	    headers[1]=[]; // concentration
-	    headers[2]=[]; // comment
-	    headers[3]=[]; // type
+
 
 	    var counter=0;
 	    for (var i = 0; i < experiments.length; i++) {
@@ -571,7 +607,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var currentData=experiment[Object.keys(experiment)[0]];
 	            for (var j=0; j<currentData.x.length; j++) {
 	                if (! data[j]) data[j]=[];
-	                data[j].push(currentData.x[j]);
+	                data[j].push(currentData.x[j].toPrecision(4));
 	            }
 
 	            for (var key in experiment) {
@@ -579,7 +615,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    addHeaders(experiment,key);
 	                    var currentData=experiment[key];
 	                    for (var j=0; j<currentData.y.length; j++) {
-	                        data[j].push(currentData.y[j]);
+	                        data[j].push(currentData.y[j].toPrecision(4));
 	                    }
 	                }
 	            }
@@ -595,18 +631,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var datum=data[i];
 	        lines.push(datum.join("\t"));
 	    }
-	    var result=lines.join("\r");
+	    var result=lines.join("\r\n");
 	    return result;
-
-	    function addHeaders(headers, experiment, type) {
-	        headers[0].push(experiment.info.name);
-	        headers[1].push(experiment.info.concentration);
-	        headers[2].push(experiment.info.comment);
-	        headers[3].push(type);
-	    }
 
 	}
 
+	function addHeaders(experiment, type) {
+	    headers[0].push(experiment.info.name);
+	    headers[1].push(experiment.info.concentration);
+	    headers[2].push(experiment.info.comment);
+	    headers[3].push(type);
+	}
 
 
 /***/ },
@@ -623,7 +658,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var options=Object.create(options||{});
 	    var experiments=[];
 	    selected.forEach(function(current) {
-	        options.info=JSON.parse(JSON.stringify(current));
+	        options.info=current;
 	        var experiment=parse(current.data, options);
 	        experiments.push(experiment);
 	    });
