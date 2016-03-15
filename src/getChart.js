@@ -84,5 +84,8 @@ module.exports=function (experiments, options) {
         }
     }
 
-    return chart;
+    return {
+        type:'chart',
+        value: chart
+    };
 }
