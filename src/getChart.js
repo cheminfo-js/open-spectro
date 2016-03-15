@@ -11,7 +11,8 @@ var types=require('./types.js');
 
 module.exports=function (experiments, options) {
     var options=options || {};
-    var channels=options.channels || 'RGBWT';
+    var channels='RGBWT';
+    if (options.channels) channels=options.channels+""; // solve datastring length problem
     var index=options.index;
 
     if (! Array.isArray(experiments)) experiments=[experiments];
