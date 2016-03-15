@@ -15,6 +15,7 @@ module.exports.wavelengthTocolor=wavelengthToColor;
 module.exports.parse=parse;
 module.exports.process=process;
 module.exports.getAnnotations=getAnnotations;
+module.exports.getColorBar=getColorBar;
 module.exports.Util=Util;
 module.exports.getChart=getChart;
 module.exports.getTabDelimited=getTabDelimited;
