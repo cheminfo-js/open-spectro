@@ -1,5 +1,8 @@
 'use strict';
 
+var colorConvert = require('color-convert');
+
+
 // convert an experiment, an array of spectra, to a chart
 
 var types=require('./types.js');
@@ -57,6 +60,8 @@ module.exports=function (experiments, options) {
     }
 
 
+    var distinctColors=getDistinctColors(experiments.length);
+
     for (var i = 0; i < experiments.length; i++) {
         if ((index === undefined) || (index === i)) {
             var experiment=experiments[i];
@@ -78,6 +83,7 @@ module.exports=function (experiments, options) {
                         if (label) label+=' ';
                         label+=key;
                     }
+                    var color=(channels.length===1) ? distinctColors[i] : types[key].color;
                     chart.data.push({
                         "x":data.x,
                         "y":data.y,
@@ -85,7 +91,7 @@ module.exports=function (experiments, options) {
                         xAxis: 0,
                         yAxis: 1,
                         defaultStyle: {
-                            lineColor: types[key].color,
+                            lineColor: color,
                             lineWidth: 2
                         }
                     });
@@ -98,4 +104,14 @@ module.exports=function (experiments, options) {
         type:'chart',
         value: chart
     };
+}
+
+
+
+function getDistinctColors(numberColor) {
+    var colors=[];
+    for (var i=0; i<360; i+=360/numberColor) {
+        colors.push(colorConvert.hsl.rgb(i, 100, 50));
+    }
+    return colors;
 }
