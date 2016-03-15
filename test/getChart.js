@@ -4,7 +4,7 @@
 var FS = require('fs');
 var OSP = require('..');
 
-describe('test getChart', function () {
+describe.only('test getChart', function () {
     it('should yield the right cart', function() {
         var dataString=FS.readFileSync('./data/data.json', 'utf8');
         var data=JSON.parse(dataString);
@@ -15,6 +15,8 @@ describe('test getChart', function () {
         var chart=OSP.getChart(experiments, {
             channels:'T'
         });
+
+//console.log(chart.value.data[0])
 
         chart.value.data.length.should.equal(9);
 

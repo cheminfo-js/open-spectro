@@ -39,14 +39,23 @@ module.exports=function (experiments, options) {
     var showChannel=(channels.length===1) ? false : true;
 
     for (var i=0; i<experiments.length; i++) {
-        if (! experiments[i].info) experiments[i].info={}
+        var experiment=experiments[i];
+        for (var key in experiment) {
+            if (!experiment[key].info) experiment[key].info = {};
+        }
     }
 
     for (var i=1; i<experiments.length; i++) {
-        if (experiments[0].info.concentration !== experiments[i].info.concentration ) showConcentration=true;
-        if (experiments[0].info.name !== experiments[i].info.name ) showName=true;
-        if (experiments[0].info.comment !== experiments[i].info.comment ) showComment=true;
+        var experiment=experiments[i];
+        for (var key in experiment) {
+            if (channels.indexOf(key) > -1) {
+                if (experiments[0][key].info.concentration !== experiment[key].info.concentration) showConcentration = true;
+                if (experiments[0][key].info.name !== experiment[key].info.name) showName = true;
+                if (experiments[0][key].info.comment !== experiment[key].info.comment) showComment = true;
+            }
+        }
     }
+
 
     for (var i = 0; i < experiments.length; i++) {
         if ((index === undefined) || (index === i)) {
@@ -69,7 +78,6 @@ module.exports=function (experiments, options) {
                         if (label) label+=' ';
                         label+=key;
                     }
-
                     chart.data.push({
                         "x":data.x,
                         "y":data.y,
