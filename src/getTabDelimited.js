@@ -2,7 +2,11 @@
 
 // convert experiments to a tab-delimited file
 
-
+var headers=[];
+headers[0]=[]; // name
+headers[1]=[]; // concentration
+headers[2]=[]; // comment
+headers[3]=[]; // type
 
 module.exports=function (experiments, channels, index) {
     var channels = channels || 'RGBWT';
@@ -11,11 +15,7 @@ module.exports=function (experiments, channels, index) {
 
     var data=[];
 
-    var headers=[];
-    headers[0]=[]; // name
-    headers[1]=[]; // concentration
-    headers[2]=[]; // comment
-    headers[3]=[]; // type
+
 
     var counter=0;
     for (var i = 0; i < experiments.length; i++) {
@@ -26,7 +26,7 @@ module.exports=function (experiments, channels, index) {
             var currentData=experiment[Object.keys(experiment)[0]];
             for (var j=0; j<currentData.x.length; j++) {
                 if (! data[j]) data[j]=[];
-                data[j].push(currentData.x[j]);
+                data[j].push(currentData.x[j].toPrecision(4));
             }
 
             for (var key in experiment) {
@@ -34,7 +34,7 @@ module.exports=function (experiments, channels, index) {
                     addHeaders(experiment,key);
                     var currentData=experiment[key];
                     for (var j=0; j<currentData.y.length; j++) {
-                        data[j].push(currentData.y[j]);
+                        data[j].push(currentData.y[j].toPrecision(4));
                     }
                 }
             }
@@ -50,15 +50,14 @@ module.exports=function (experiments, channels, index) {
         var datum=data[i];
         lines.push(datum.join("\t"));
     }
-    var result=lines.join("\r");
+    var result=lines.join("\r\n");
     return result;
-
-    function addHeaders(headers, experiment, type) {
-        headers[0].push(experiment.info.name);
-        headers[1].push(experiment.info.concentration);
-        headers[2].push(experiment.info.comment);
-        headers[3].push(type);
-    }
 
 }
 
+function addHeaders(experiment, type) {
+    headers[0].push(experiment.info.name);
+    headers[1].push(experiment.info.concentration);
+    headers[2].push(experiment.info.comment);
+    headers[3].push(type);
+}

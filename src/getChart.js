@@ -6,8 +6,10 @@ var types=require('./types.js');
 
 
 
-module.exports=function (experiments, channels, index) {
-    var channels = channels || 'RGBWT';
+module.exports=function (experiments, options) {
+    var options=options || {};
+    var channels=options.channels || 'RGBWT';
+    var index=options.index;
 
     if (! Array.isArray(experiments)) experiments=[experiments];
 
@@ -17,19 +19,16 @@ module.exports=function (experiments, channels, index) {
     }
 
     var chart = {
-        type: "chart",
-        value: {
-            title: "Open Spectrophotometer results",
-            "axis": [
-                {
-                    "label": "Wavelength (nm)"
-                },
-                {
-                    "label": yLabel
-                }
-            ],
-            "data": []
-        }
+        title: "Open Spectrophotometer results",
+        "axis": [
+            {
+                "label": "Wavelength (nm)"
+            },
+            {
+                "label": yLabel
+            }
+        ],
+        "data": []
     }
 
     var counter=0;
@@ -45,8 +44,8 @@ module.exports=function (experiments, channels, index) {
 
     for (var i=1; i<experiments.length; i++) {
         if (experiments[0].info.concentration !== experiments[i].info.concentration ) showConcentration=true;
-        if (experiments[0].name.concentration !== experiments[i].name.concentration ) showName=true;
-        if (experiments[0].comment.concentration !== experiments[i].comment.concentration ) showComment=true;
+        if (experiments[0].info.name !== experiments[i].info.name ) showName=true;
+        if (experiments[0].info.comment !== experiments[i].info.comment ) showComment=true;
     }
 
     for (var i = 0; i < experiments.length; i++) {
@@ -71,7 +70,7 @@ module.exports=function (experiments, channels, index) {
                         label+=key;
                     }
 
-                    chart.value.data.push({
+                    chart.data.push({
                         "x":data.x,
                         "y":data.y,
                         "label":label,

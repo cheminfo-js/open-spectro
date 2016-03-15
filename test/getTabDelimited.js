@@ -4,7 +4,7 @@
 var FS = require('fs');
 var OSP = require('..');
 
-describe('test getTabDelimited', function () {
+describe.only('test getTabDelimited', function () {
     it('should yield the right tab-delimited file', function() {
         var options= {
             smooth: 8,
