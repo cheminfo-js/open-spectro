@@ -4,7 +4,7 @@
 var FS = require('fs');
 var OSP = require('..');
 
-describe.only('test parse', function () {
+describe('test parse', function () {
     it('should parse coorectly the txt file', function() {
         var options= {
             smooth: 8,

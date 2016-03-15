@@ -15,7 +15,8 @@ describe('test getChart', function () {
         var chart=OSP.getChart(experiments, {
             channels:'T'
         });
-        chart.data.length.should.equal(9);
+
+        chart.value.data.length.should.equal(9);
 
     });
 });

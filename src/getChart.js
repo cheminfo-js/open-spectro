@@ -38,9 +38,9 @@ module.exports=function (experiments, options) {
     var showComment=false;
     var showChannel=(channels.length===1) ? false : true;
 
-    experiments.forEach(function(experiment) {
-        experiment.info=experiment.info || {};
-    });
+    for (var i=0; i<experiments.length; i++) {
+        if (! experiments[i].info) experiments[i].info={}
+    }
 
     for (var i=1; i<experiments.length; i++) {
         if (experiments[0].info.concentration !== experiments[i].info.concentration ) showConcentration=true;
