@@ -84,7 +84,7 @@ module.exports=function (experiments, options) {
                         if (label) label+=' ';
                         label+=key;
                     }
-                    var color=(channels.length===1) ? distinctColors[i] : types[key].color;
+                    var color=(channels.length===1 && experiments.length>1) ? distinctColors[i] : types[key].color;
                     chart.data.push({
                         "x":data.x,
                         "y":data.y,
