@@ -1,6 +1,6 @@
 {
   "name": "open-spectro",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Libraries useful to process spectra from the Open Spectrophotometer",
   "keywords": [
     "dummy",
