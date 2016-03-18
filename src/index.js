@@ -1,15 +1,16 @@
 'use strict';
 
 
-var wavelengthToColor = require('./wavelengthToColor');
-var parse = require('./parse');
-var process = require('./process');
-var getAnnotations = require('./getAnnotations');
-var getColorBar = require('./getColorBar');
-var Util = require('./util');
-var getChart = require('./getChart');
-var getTabDelimited = require('./getTabDelimited');
-var load = require('./load');
+var wavelengthToColor = require('./utils/wavelengthToColor');
+var parse = require('./utils/parse');
+var process = require('./utils/process');
+var getAnnotations = require('./utils/getAnnotations');
+var getColorBar = require('./utils/getColorBar');
+var Util = require('./utils/util');
+var getChart = require('./utils/getChart');
+var getTabDelimited = require('./utils/getTabDelimited');
+var load = require('./utils/load');
+var experiments = require('./experiments');
 
 module.exports.wavelengthTocolor=wavelengthToColor;
 module.exports.parse=parse;
@@ -20,3 +21,4 @@ module.exports.Util=Util;
 module.exports.getChart=getChart;
 module.exports.getTabDelimited=getTabDelimited;
 module.exports.load=load;
+module.exports.experiments=experiments;
